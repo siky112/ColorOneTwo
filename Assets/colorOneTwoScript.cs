@@ -120,7 +120,7 @@ public class colorOneTwoScript : MonoBehaviour
 		}
 	}
 	
-	void TwitchHandleForceSolve()
+	void TwitchHandleForcedSolve()
 	{
 		if(Solution==1) button1.OnInteract();
 		else {button2.OnInteract();}
