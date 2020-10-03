@@ -1,4 +1,4 @@
-﻿//I hope my code is readable enough that you don't need any comments.
+//I hope my code is readable enough that you don't need any comments.
 
 using System;
 using System.Collections;
@@ -32,6 +32,14 @@ public class colorOneTwoScript : MonoBehaviour
 	private bool colorsPicked = false;
 	private bool moduleSolved; 
 	
+	private int Solution
+	{
+		get
+		{
+			return (leftLEDColor == 0 && (redArray[rightLEDColor] == 1)) || (leftLEDColor == 1 && (blueArray[rightLEDColor] == 1)) || (leftLEDColor == 2 && (greenArray[rightLEDColor] == 1) || (leftLEDColor == 3 && (yellowArray[rightLEDColor] == 1))) ? 1 : 2;
+		}
+	}
+	
 	void Awake ()
 	{
 		moduleId = moduleIdCounter++;
@@ -56,7 +64,7 @@ public class colorOneTwoScript : MonoBehaviour
 		led2.material = colors[rightLEDColor];
 		Debug.LogFormat("[Color One Two #{0}] The left led's color is {1}.", moduleId, colors[leftLEDColor]);
 		Debug.LogFormat("[Color One Two #{0}] The right led's color is {1}.", moduleId, colors[rightLEDColor]);
-		if ((leftLEDColor == 0 && (redArray[rightLEDColor] == 1)) || (leftLEDColor == 1 && (blueArray[rightLEDColor] == 1)) || (leftLEDColor == 2 && (greenArray[rightLEDColor] == 1) || (leftLEDColor == 3 && (yellowArray[rightLEDColor] == 1))))
+		if (Solution==1)
 		{
 			Debug.LogFormat("[Color One Two #{0}] You have to push button one.", moduleId);
 		}
@@ -73,7 +81,7 @@ public class colorOneTwoScript : MonoBehaviour
 		GetComponent<KMAudio>().PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);
 		if (moduleSolved == false)
 		{
-			if ((leftLEDColor == 0 && (redArray[rightLEDColor] == 1)) || (leftLEDColor == 1 && (blueArray[rightLEDColor] == 1)) || (leftLEDColor == 2 && (greenArray[rightLEDColor] == 1) || (leftLEDColor == 3 && (yellowArray[rightLEDColor] == 1))))
+			if (Solution==1)
 			{
 				moduleSolved = true;
 				GetComponent<KMBombModule>().HandlePass();
@@ -96,7 +104,7 @@ public class colorOneTwoScript : MonoBehaviour
 		GetComponent<KMAudio>().PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);
 		if (moduleSolved == false)
 		{
-			if ((leftLEDColor == 0 && (redArray[rightLEDColor] == 2)) || (leftLEDColor == 1 && (blueArray[rightLEDColor] == 2)) || (leftLEDColor == 2 && (greenArray[rightLEDColor] == 2) || (leftLEDColor == 3 && (yellowArray[rightLEDColor] == 2))))
+			if (Solution==2)
 			{
 				moduleSolved = true;
 				GetComponent<KMBombModule>().HandlePass();
@@ -109,6 +117,36 @@ public class colorOneTwoScript : MonoBehaviour
 				Debug.LogFormat("[Color One Two #{0}] Wrong! Module striked.", moduleId);
 				GetComponent<KMBombModule>().HandleStrike();
 			}
+		}
+	}
+	
+	void TwitchHandleForceSolve()
+	{
+		if(Solution==1) button1.OnInteract();
+		else {button2.OnInteract();}
+	}
+	
+	#pragma warning disable 414
+	public string TwitchHelpMessage = "Use '!{0} <button>' to press a button! Button can be '1; l; left; 2; r; right'";
+	#pragma warning restore 414
+	IEnumerator ProcessTwitchCommand(string command)
+	{
+		yield return null;
+		switch(command.ToLowerInvariant())
+		{
+			case "1":
+			case "l":
+			case "left":
+				button1.OnInteract();
+				break;
+			case "2":
+			case "r":
+			case "right":
+				button2.OnInteract();
+				break;
+			default:
+				yield return "sendtochaterror Invalid button!";
+				yield break;
 		}
 	}
 }
